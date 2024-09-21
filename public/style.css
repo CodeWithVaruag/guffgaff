@@ -25,7 +25,7 @@ body {
     background-color: var(--background-color);
     background-image: linear-gradient(135deg, #2c3e50, #4ca1af);
     backdrop-filter: blur(15px);
-  }
+}
 
 h1 {
     background: linear-gradient(135deg, rgb(26, 188, 156), rgb(52, 152, 219)) padding-box text;
@@ -36,7 +36,7 @@ h1 {
     font-weight: 700;
     letter-spacing: 2px;
     text-shadow: rgba(0, 0, 0, 0.2) 0px 4px 10px;
-  }
+}
 
 #messages {
     list-style-type: none;
@@ -81,9 +81,9 @@ h1 {
     margin: 1rem 0;
     clear: both;
 }
-
 .chat-controls {
     display: flex;
+    align-items: center;
     padding: 1rem;
     background-color: var(--chat-background);
     border-top: 1px solid #ddd;
@@ -95,86 +95,67 @@ h1 {
     font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 25px;
-    margin-right: 0.5rem;
+    min-width: 230px; /* Ensure a minimum width */
 }
 
 button {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1rem;
     font-size: 1rem;
     color: var(--text-color-light);
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
-}
-
-button:hover {
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: translateY(0);
-}
-
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    white-space: nowrap;
+    margin-left: 0.5rem; /* Space between buttons */
 }
 
 #send-button {
     background-color: var(--primary-color);
 }
 
-#next-button {
-    background-color: var(--secondary-color);
-    margin-left: 0.5rem;
-}
-
-@media (max-width: 600px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    #messages {
-        margin: 0 0.5rem;
-    }
-
-    .chat-controls {
-        padding: 0.5rem;
-    }
-
-    #message, button {
-        font-size: 0.9rem;
-    }
-}
-
-#media-upload, #mic-button, #upload-button, #send-button {
-    margin-left: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#media-upload {
-    width: 80px;
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
+#upload-button {
+    background-color: black;
 }
 
 #mic-button {
     background-color: #e74c3c;
 }
 
-#mic-button:active {
-    background-color: #c0392b;
+#next-button {
+    background-color: var(--secondary-color);
 }
 
-#upload-button {
-    background-color: black;
+/* Media Query for Mobile */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    #messages {
+        margin: 0.5rem;
+    }
+
+    .chat-controls {
+        flex-wrap: nowrap; /* Prevent wrapping */
+    }
+
+    #message {
+        width: 70%; /* Increase width on mobile */
+        margin-right: auto; /* Align to left */
+    }
+
+    button {
+        padding: 0.5rem 0.75rem; /* Adjust padding for smaller screens */
+        margin-left: 0.25rem; /* Reduce margin between buttons */
+    }
 }
 
-#upload-button:active {
-    background-color: #333;
+#media-upload {
+    display: none; /* Hide file upload input */
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
