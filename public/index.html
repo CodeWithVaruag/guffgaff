@@ -3,45 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Guff-Gaff</title>
+    <title>Guff-Gaff - Chat, Connect, Create!</title>
     <link rel="stylesheet" href="homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Guff-Gaff!</h1>
-        <p>Your one-stop platform for engaging conversations.</p>
-        
-        <h2>Community Guidelines</h2>
-        <p>To maintain a safe and enjoyable environment for all users, please adhere to the following guidelines:</p>
-        <ul>
-            <li><strong>Respect Others:</strong> Treat all users with kindness. Personal attacks, harassment, and hate speech will not be tolerated.</li>
-            <li><strong>No Spamming:</strong> Avoid sending repetitive messages or advertisements. Keep the chat relevant and engaging.</li>
-            <li><strong>Privacy Matters:</strong> Do not share personal information (yours or others') in the chat. Protect your privacy and that of others.</li>
-            <li><strong>Content Restrictions:</strong> Explicit content, including pornography and graphic violence, is strictly prohibited.</li>
-            <li><strong>Stay On Topic:</strong> Keep discussions relevant to the chat's theme. Off-topic conversations should be taken to private messages.</li>
-            <li><strong>Report Issues:</strong> If you encounter harassment or inappropriate behavior, please report it to the moderators immediately.</li>
-            <li><strong>Have Fun:</strong> Enjoy the experience! Engage positively and make new friends.</li>
-        </ul>
+   
 
-        <button id="start-chat" onclick="startChat()">Click to Start Chat</button>
-    </div>
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1 class="animated-text">Welcome to Guff-Gaff</h1>
+                <p>Where words dance and friendships bloom!</p>
+                <button class="cta-button" onclick="startChat()">Start Chatting</button>
+            </div>
+            <div class="hero-image">
+                <img src="https://www.transparentpng.com/thumb/one-piece/c5UiuE-one-piece-hd-photo.png" alt="Colorful chat bubbles" class="floating">
+            </div>
+        </section>
+
+        <section id="features" class="features">
+
+            <div class="feature-cards">
+                <div class="feature-card" style="--rotation: -5deg;">
+                    <img src="/api/placeholder/100/100" alt="Diverse conversations icon" class="feature-icon">
+                    <h3>Wacky Chats</h3>
+                    <p>Dive into conversations that'll tickle your brain!</p>
+                </div>
+                <div class="feature-card" style="--rotation: 3deg;">
+                    <img src="/api/placeholder/100/100" alt="Friend matching icon" class="feature-icon">
+                    <h3>Friend Finder</h3>
+                    <p>Meet your new bestie !</p>
+                </div>
+                <div class="feature-card" style="--rotation: -2deg;">
+                    <img src="/api/placeholder/100/100" alt="Safe chat icon" class="feature-icon">
+                    <h3>Safe Space</h3>
+                    <p>Chat freely in our cozy, troll-free zone!</p>
+                </div>
+                <div class="feature-card" style="--rotation: 4deg;">
+                    <img src="/api/placeholder/100/100" alt="Fun challenges icon" class="feature-icon">
+                    <h3>Gab Challenges</h3>
+                    <p>Take on daily chat challenges for extra fun!</p>
+                </div>
+            </div>
+        </section>
+
+       
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2024 Guff-Gaff. All rights reserved.</p>
-            <div class="social-media">
-                <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <div class="footer-logo">
+                <img src="/api/placeholder/100/50" alt="" class="logo-img">
+            </div>
+          
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
             </div>
         </div>
+        <script>
+            function startChat() {
+                window.location.href = 'chat.html'; // Redirect to the chat page
+            }
+        </script>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Guff-Gaff. All rights reserved. Keep on chatting!</p>
+        </div>
     </footer>
-
-    <script>
-        function startChat() {
-            window.location.href = 'chat.html'; // Redirect to the chat page
-        }
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
