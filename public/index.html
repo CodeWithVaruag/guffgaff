@@ -3,74 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guff-Gaff - Chat, Connect, Create!</title>
-    <link rel="stylesheet" href="homestyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Guff Gaff - Random Chats, Endless Fun!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #3A6979;
+            --secondary-color: #5B8EA0;
+            --accent-color: #FF9800;
+            --text-color: #FFFFFF;
+            --background-color: #1E3D4A;
+            --card-color: #2C5060;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: var(--card-color);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .anime-mascot {
+            max-width: 300px;
+            margin: 50px auto;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .rules {
+            background-color: var(--primary-color);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 50px;
+        }
+
+        .rules h2 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rules ul {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .rules li {
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .rules li:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .anime-mascot {
+                max-width: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
-   
+    <div class="container">
+        <header>
+            <h1>Guff Gaff</h1>
+            <p class="tagline">Where Random Chats Lead to Endless Fun!</p>
+            <button class="cta-button" onclick="startChat()">Start Chatting Now!</button>
+        </header>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h1 class="animated-text">Welcome to Guff-Gaff</h1>
-                <p>Where words dance and friendships bloom!</p>
-                <button class="cta-button" onclick="startChat()">Start Chatting</button>
+        <img src="one-piece-png-16560.png" alt="Guff Gaff Mascot" class="anime-mascot">
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3 class="feature-title">Global Community</h3>
+                <p>Connect with people from all around the world and expand your horizons.</p>
             </div>
-            <div class="hero-image">
-                <img src="https://www.transparentpng.com/thumb/one-piece/c5UiuE-one-piece-hd-photo.png" alt="Colorful chat bubbles" class="floating">
+            <div class="feature-card">
+                <div class="feature-icon">🎭</div>
+                <h3 class="feature-title">Exciting Topics</h3>
+                <p>Dive into conversations about anything and everything that interests you.</p>
             </div>
-        </section>
-
-        <section id="features" class="features">
-
-            <div class="feature-cards">
-                <div class="feature-card" style="--rotation: -5deg;">
-                    <img src="/api/placeholder/100/100" alt="Diverse conversations icon" class="feature-icon">
-                    <h3>Wacky Chats</h3>
-                    <p>Dive into conversations that'll tickle your brain!</p>
-                </div>
-                <div class="feature-card" style="--rotation: 3deg;">
-                    <img src="/api/placeholder/100/100" alt="Friend matching icon" class="feature-icon">
-                    <h3>Friend Finder</h3>
-                    <p>Meet your new bestie !</p>
-                </div>
-                <div class="feature-card" style="--rotation: -2deg;">
-                    <img src="/api/placeholder/100/100" alt="Safe chat icon" class="feature-icon">
-                    <h3>Safe Space</h3>
-                    <p>Chat freely in our cozy, troll-free zone!</p>
-                </div>
-                <div class="feature-card" style="--rotation: 4deg;">
-                    <img src="/api/placeholder/100/100" alt="Fun challenges icon" class="feature-icon">
-                    <h3>Gab Challenges</h3>
-                    <p>Take on daily chat challenges for extra fun!</p>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Safe & Secure</h3>
+                <p>Enjoy peace of mind with our advanced safety features and moderation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎉</div>
+                <h3 class="feature-title">Fun Challenges</h3>
+                <p>Participate in daily chat challenges and win cool virtual rewards!</p>
             </div>
         </section>
 
-       
+        <div class="rules">
+            <h2>Rules and Rules</h2>
+            <ul>
+                <li>Be respectful to all users</li>
+                <li>No hate speech or bullying</li>
+                <li>Keep it family-friendly</li>
+                <li>Protect your privacy</li>
+                <li>Report any issues</li>
+                <li>Have fun and be yourself!</li>
+            </ul>
+        </div>
+    </div>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-logo">
-                <img src="/api/placeholder/100/50" alt="" class="logo-img">
-            </div>
-          
-            <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
-            </div>
-        </div>
-        <script>
-            function startChat() {
-                window.location.href = 'chat.html'; // Redirect to the chat page
-            }
-        </script>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Guff-Gaff. All rights reserved. Keep on chatting!</p>
-        </div>
+        <p>&copy; 2024 Guff Gaff. All rights reserved.</p>
+        <p>Connect, Chat, and Create Memories!</p>
     </footer>
+
+    <div class="scroll-to-top">↑</div>
+
+    <script>
+        function startChat() {
+            window.location.href = 'chat.html'; // Redirect to the chat page
+        }
+
+        // Scroll to top functionality
+        const scrollToTop = document.querySelector('.scroll-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 100) {
+                scrollToTop.classList.add('visible');
+            } else {
+                scrollToTop.classList.remove('visible');
+            }
+        });
+
+        scrollToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
 </body>
 </html>

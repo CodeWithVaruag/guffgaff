@@ -49,15 +49,15 @@ class ChatManager {
             partner.emit('disconnected', 'Stranger has disconnected.');
             this.activeChats.delete(partner.id);
             this.activeChats.delete(socket.id);
-            this.addToWaiting(partner);
+            this.addToWaiting(partner); // Re-add partner to waiting list
         }
         this.removeFromWaiting(socket);
     }
 
     findPartnerForUser(socket) {
-        this.disconnectUser(socket);
+        this.disconnectUser(socket); // Ensure previous connections are cleared
         if (this.waitingUsers.length > 0) {
-            const partner = this.waitingUsers.shift();
+            const partner = this.waitingUsers.shift(); // Get the next waiting user
             const chatId = this.matchUsers(socket, partner);
             return chatId;
         } else {
@@ -71,7 +71,7 @@ const chatManager = new ChatManager();
 
 io.on('connection', (socket) => {
     console.log('New user connected:', socket.id);
-    chatManager.findPartnerForUser(socket);
+    chatManager.findPartnerForUser(socket); // Try to find a partner on connection
 
     socket.on('chat message', (msg) => {
         const chatInfo = chatManager.activeChats.get(socket.id);
@@ -88,15 +88,16 @@ io.on('connection', (socket) => {
     });
 
     socket.on('next', () => {
-        chatManager.findPartnerForUser(socket);
+        chatManager.findPartnerForUser(socket); // Find a new partner
     });
 
     socket.on('disconnect', () => {
-        chatManager.disconnectUser(socket);
+        chatManager.disconnectUser(socket); // Handle disconnection
         console.log('User disconnected:', socket.id);
     });
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
