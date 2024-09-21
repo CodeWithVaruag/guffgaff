@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guff-Gaff</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Guff-Gaff <i class="fas fa-comments"></i></h1>
+    <ul id="messages"></ul>
+    <div class="chat-controls">
+        <input id="message" autocomplete="off" required disabled placeholder="Type a message...">
+        <button id="send-button" onclick="sendMessage()" disabled><i class="fas fa-paper-plane"></i></button>
+        <input type="file" id="media-upload" accept="image/*,video/*,audio/*" style="display: none;">
+        <button id="upload-button" onclick="uploadMedia()" disabled><i class="fas fa-paperclip"></i></button>
+        <button id="mic-button" onclick="toggleMic()" disabled><i class="fas fa-microphone"></i></button>
+        <button id="next-button" onclick="findNext()">Next</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let isInChat = false;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        function addMessage(message, isYou = false, isSystem = false, mediaType = null, mediaData = null) {
+            const item = document.createElement('li');
+            if (mediaType) {
+                if (mediaType === 'image') {
+                    const img = document.createElement('img');
+                    img.src = mediaData;
+                    img.alt = 'Shared image';
+                    img.style.maxWidth = '100%';
+                    item.appendChild(img);
+                } else if (mediaType === 'video') {
+                    const video = document.createElement('video');
+                    video.src = mediaData;
+                    video.controls = true;
+                    video.style.maxWidth = '100%';
+                    item.appendChild(video);
+                } else if (mediaType === 'audio') {
+                    const audio = document.createElement('audio');
+                    audio.src = mediaData;
+                    audio.controls = true;
+                    item.appendChild(audio);
+                }
+            } else {
+                item.textContent = message;
+            }
+            if (isSystem) {
+                item.classList.add('system-message');
+            } else if (isYou) {
+                item.classList.add('you');
+            } else {
+                item.classList.add('stranger');
+            }
+            document.getElementById('messages').appendChild(item);
+            item.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateUIState(inChat) {
+            isInChat = inChat;
+            document.getElementById('message').disabled = !inChat;
+            document.getElementById('send-button').disabled = !inChat;
+            document.getElementById('next-button').textContent = inChat ? 'Next' : 'Find Chat';
+            document.getElementById('upload-button').disabled = !inChat;
+            document.getElementById('mic-button').disabled = !inChat;
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value.trim();
+            if (message && isInChat) {
+                socket.emit('chat message', message);
+                addMessage(message, true);
+                messageInput.value = '';
+            }
+        }
+
+        function findNext() {
+            socket.emit('next');
+        }
+
+        function uploadMedia() {
+            document.getElementById('media-upload').click();
+        }
+
+        function toggleMic() {
+            const micButton = document.getElementById('mic-button');
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                micButton.classList.remove('recording');
+            } else {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+                        micButton.innerHTML = '<i class="fas fa-stop"></i>';
+                        micButton.classList.add('recording');
+
+                        mediaRecorder.addEventListener("dataavailable", event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        mediaRecorder.addEventListener("stop", () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                socket.emit('media message', { type: 'audio', data: e.target.result });
+                                addMessage(null, true, false, 'audio', e.target.result);
+                            };
+                            reader.readAsDataURL(audioBlob);
+                            audioChunks = [];
+                        });
+                    });
+            }
+        }
+
+        socket.on('waiting', (message) => {
+            clearMessages();
+            addMessage(message, false, true);
+            updateUIState(false);
+        });
+
+        socket.on('matched', (message) => {
+            clearMessages();
+            addMessage(message, false, true);
+            updateUIState(true);
+        });
+
+        socket.on('chat message', (msg) => {
+            addMessage(msg, false);
+        });
+
+        socket.on('media message', (data) => {
+            addMessage(null, false, false, data.type, data.data);
+        });
+
+        socket.on('disconnected', (message) => {
+            addMessage(message, false, true);
+            updateUIState(false);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('message').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+            document.getElementById('media-upload').addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const mediaType = file.type.split('/')[0];
+                        socket.emit('media message', { type: mediaType, data: e.target.result });
+                        addMessage(null, true, false, mediaType, e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
