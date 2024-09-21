@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,9 +115,17 @@
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .rules {
@@ -134,18 +143,25 @@
 
         .rules ul {
             list-style-type: none;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            display: block;
+            /* Change from grid to block for vertical layout */
+            margin: 0;
+            /* Reset margin */
+            padding: 0;
+            /* Reset padding */
         }
 
         .rules li {
             background-color: var(--card-color);
             padding: 15px;
             border-radius: 10px;
-            text-align: center;
+            text-align: left;
+            /* Align text to the left */
+            margin-bottom: 10px;
+            /* Add some spacing between items */
             transition: all 0.3s ease;
         }
+
 
         .rules li:hover {
             transform: scale(1.05);
@@ -203,6 +219,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -239,12 +256,22 @@
         <div class="rules">
             <h2>Rules and Rules</h2>
             <ul>
-                <li>Be respectful to all users</li>
-                <li>No hate speech or bullying</li>
-                <li>Keep it family-friendly</li>
-                <li>Protect your privacy</li>
-                <li>Report any issues</li>
-                <li>Have fun and be yourself!</li>
+                <li>Be respectful to all users and value diverse opinions.</li>
+                <li>No hate speech, bullying, or harassment of any kind.</li>
+                <li>Keep conversations family-friendly; avoid explicit content.</li>
+                <li>Protect your privacy; do not share personal information.</li>
+                <li>Report any issues or inappropriate behavior to moderators.</li>
+                <li>Have fun and be yourself while respecting others.</li>
+                <li>Engage actively and contribute to positive discussions.</li>
+                <li>Use clear and concise language to foster understanding.</li>
+                <li>Limit off-topic discussions to keep the chat focused.</li>
+                <li>Encourage others; support and uplift fellow users.</li>
+                <li>Be open to constructive feedback and differing viewpoints.</li>
+                <li>Keep your messages respectful, even in disagreements.</li>
+                <li>Participate in community events and discussions to build rapport.</li>
+                <li>Respect the moderators and follow their guidance.</li>
+
+
             </ul>
         </div>
     </div>
@@ -276,4 +303,5 @@
         });
     </script>
 </body>
+
 </html>
