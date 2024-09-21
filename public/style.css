@@ -95,7 +95,7 @@ h1 {
     font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 25px;
-    min-width: 230px; /* Ensure a minimum width */
+    min-width: 200px; /* Ensure a minimum width */
 }
 
 button {
