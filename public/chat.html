@@ -9,16 +9,28 @@
 </head>
 <body>
     <h1>Guff-Gaff <i class="fas fa-comments"></i></h1>
-    <ul id="messages"></ul>
+
+    <div id="imp-boxes">
+       <div id="user-count">
+        Users online: <span id="user-count-value">0</span>
+       </div>
+        <button id="next-button" onclick="findNext()">
+        Find Next Person 
+       </button> 
+    </div>
+
+
+
+    <ul id="messages"> </ul>
+    
     <div class="chat-controls">
-        
         <input id="message" autocomplete="off" required disabled placeholder="Type a message...">
-        <button id="send-button" onclick="sendMessage()" disabled><i class="fas fa-angle-right"></i></button>
         <input type="file" id="media-upload" accept="image/*,video/*,audio/*" style="display: none;">
         <button id="upload-button" onclick="uploadMedia()" disabled><i class="fas fa-paperclip"></i></button>
         <button id="mic-button" onclick="toggleMic()" disabled><i class="fas fa-microphone"></i></button>
-        <button id="next-button" onclick="findNext()"><i class="fas fa-angle-double-right"></i></button>
+        <button id="send-button" onclick="sendMessage()" disabled><i class="fas fa-angle-double-right"></i></button>
     </div>
+    
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -57,6 +69,13 @@
             }
             if (isSystem) {
                 item.classList.add('system-message');
+                if (message.includes('Waiting')) {
+                    item.classList.add('waiting');
+                } else if (message.includes('You are now chatting')) {
+                    item.classList.add('connected');
+                } else if (message.includes('disconnected')) {
+                    item.classList.add('disconnected');
+                }
             } else if (isYou) {
                 item.classList.add('you');
             } else {
@@ -70,7 +89,7 @@
             isInChat = inChat;
             document.getElementById('message').disabled = !inChat;
             document.getElementById('send-button').disabled = !inChat;
-            document.getElementById('next-button').disabled = !inChat ;
+            document.getElementById('next-button').disabled = !inChat;
             document.getElementById('upload-button').disabled = !inChat;
             document.getElementById('mic-button').disabled = !inChat;
         }
@@ -148,6 +167,10 @@
         socket.on('disconnected', (message) => {
             addMessage(message, false, true);
             updateUIState(false);
+        });
+
+        socket.on('user count', (count) => {
+            document.getElementById('user-count-value').textContent = count;
         });
 
         document.addEventListener('DOMContentLoaded', () => {

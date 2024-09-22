@@ -7,10 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files from the public directory
 app.use(express.static('public'));
 
-// Serve the main HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -19,15 +17,18 @@ class ChatManager {
     constructor() {
         this.waitingUsers = [];
         this.activeChats = new Map();
+        this.totalUsers = 0;
     }
 
     addToWaiting(socket) {
         this.waitingUsers.push(socket);
         socket.emit('waiting', 'Waiting for a random stranger to connect...');
+        this.updateUserCount();
     }
 
     removeFromWaiting(socket) {
         this.waitingUsers = this.waitingUsers.filter(user => user !== socket);
+        this.updateUserCount();
     }
 
     matchUsers(user1, user2) {
@@ -38,6 +39,7 @@ class ChatManager {
             user.join(chatId);
             user.emit('matched', 'You are now chatting with a random stranger.');
         });
+        this.updateUserCount();
         return chatId;
     }
 
@@ -49,15 +51,16 @@ class ChatManager {
             partner.emit('disconnected', 'Stranger has disconnected.');
             this.activeChats.delete(partner.id);
             this.activeChats.delete(socket.id);
-            this.addToWaiting(partner); // Re-add partner to waiting list
+            this.addToWaiting(partner);
         }
         this.removeFromWaiting(socket);
+        this.updateUserCount();
     }
 
     findPartnerForUser(socket) {
-        this.disconnectUser(socket); // Ensure previous connections are cleared
+        this.disconnectUser(socket);
         if (this.waitingUsers.length > 0) {
-            const partner = this.waitingUsers.shift(); // Get the next waiting user
+            const partner = this.waitingUsers.shift();
             const chatId = this.matchUsers(socket, partner);
             return chatId;
         } else {
@@ -65,13 +68,20 @@ class ChatManager {
             return null;
         }
     }
+
+    updateUserCount() {
+        this.totalUsers = this.waitingUsers.length + this.activeChats.size;
+        io.emit('user count', this.totalUsers);
+    }
 }
 
 const chatManager = new ChatManager();
 
 io.on('connection', (socket) => {
     console.log('New user connected:', socket.id);
-    chatManager.findPartnerForUser(socket); // Try to find a partner on connection
+    chatManager.totalUsers++;
+    chatManager.updateUserCount();
+    chatManager.findPartnerForUser(socket);
 
     socket.on('chat message', (msg) => {
         const chatInfo = chatManager.activeChats.get(socket.id);
@@ -88,16 +98,17 @@ io.on('connection', (socket) => {
     });
 
     socket.on('next', () => {
-        chatManager.findPartnerForUser(socket); // Find a new partner
+        chatManager.findPartnerForUser(socket);
     });
 
     socket.on('disconnect', () => {
-        chatManager.disconnectUser(socket); // Handle disconnection
+        chatManager.disconnectUser(socket);
+        chatManager.totalUsers--;
+        chatManager.updateUserCount();
         console.log('User disconnected:', socket.id);
     });
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
