@@ -223,6 +223,10 @@
                 }
             });
         });
+
+        socket.on('heartbeat', () => {
+            socket.emit('heartbeat-response');
+        });
     </script>
 </body>
 </html>

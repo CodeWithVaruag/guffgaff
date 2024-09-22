@@ -18,6 +18,7 @@ class ChatManager {
         this.waitingUsers = [];
         this.activeChats = new Map();
         this.totalUsers = 0;
+        this.heartbeats = new Map();
     }
 
     addToWaiting(socket) {
@@ -38,6 +39,7 @@ class ChatManager {
         [user1, user2].forEach(user => {
             user.join(chatId);
             user.emit('matched', 'You are now chatting with a random stranger.');
+            this.startHeartbeat(user);
         });
         this.updateUserCount();
         return chatId;
@@ -54,6 +56,7 @@ class ChatManager {
             this.addToWaiting(partner);
         }
         this.removeFromWaiting(socket);
+        this.stopHeartbeat(socket);
         this.updateUserCount();
     }
 
@@ -74,17 +77,37 @@ class ChatManager {
         io.emit('user count', this.totalUsers);
     }
 
-    // New method to handle reconnections
     reconnectUser(socket) {
         const chatInfo = this.activeChats.get(socket.id);
         if (chatInfo) {
             const { partner, chatId } = chatInfo;
             socket.join(chatId);
-            socket.emit('matched', 'You have reconnected to your chat.');
+            socket.emit('reconnected', 'You have reconnected to your chat.');
             partner.emit('system message', 'Your chat partner has reconnected.');
+            this.startHeartbeat(socket);
         } else {
             this.findPartnerForUser(socket);
         }
+    }
+
+    startHeartbeat(socket) {
+        this.stopHeartbeat(socket);
+        this.heartbeats.set(socket.id, setInterval(() => {
+            socket.emit('heartbeat');
+        }, 5000)); // Send heartbeat every 5 seconds
+    }
+
+    stopHeartbeat(socket) {
+        const heartbeatInterval = this.heartbeats.get(socket.id);
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            this.heartbeats.delete(socket.id);
+        }
+    }
+
+    handleMissedHeartbeat(socket) {
+        console.log('Missed heartbeat from:', socket.id);
+        this.disconnectUser(socket);
     }
 }
 
@@ -96,7 +119,6 @@ io.on('connection', (socket) => {
     chatManager.updateUserCount();
     chatManager.findPartnerForUser(socket);
 
-    // New event handler for rejoining
     socket.on('rejoin', () => {
         chatManager.reconnectUser(socket);
     });
@@ -119,21 +141,16 @@ io.on('connection', (socket) => {
         chatManager.findPartnerForUser(socket);
     });
 
-    socket.on('disconnect', (reason) => {
-        console.log('User disconnected:', socket.id, 'Reason:', reason);
-        if (reason === 'io server disconnect') {
-            // The disconnection was initiated by the server, you need to reconnect manually
-            socket.connect();
-        }
-        // Don't remove the user from active chats immediately
-        setTimeout(() => {
-            const chatInfo = chatManager.activeChats.get(socket.id);
-            if (chatInfo) {
-                chatManager.disconnectUser(socket);
-                chatManager.totalUsers--;
-                chatManager.updateUserCount();
-            }
-        }, 5000); // Wait for 5 seconds before considering the user truly disconnected
+    socket.on('heartbeat-response', () => {
+        // Reset the missed heartbeat counter when we receive a response
+        chatManager.startHeartbeat(socket);
+    });
+
+    socket.on('disconnect', () => {
+        chatManager.disconnectUser(socket);
+        chatManager.totalUsers--;
+        chatManager.updateUserCount();
+        console.log('User disconnected:', socket.id);
     });
 });
 
