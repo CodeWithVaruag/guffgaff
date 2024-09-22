@@ -19,8 +19,6 @@
        </button> 
     </div>
 
-
-
     <ul id="messages"> </ul>
     
     <div class="chat-controls">
@@ -31,10 +29,15 @@
         <button id="send-button" onclick="sendMessage()" disabled><i class="fas fa-angle-double-right"></i></button>
     </div>
     
-
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        const socket = io({
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000,
+        });
         let isInChat = false;
         let mediaRecorder;
         let audioChunks = [];
@@ -144,6 +147,26 @@
             }
         }
 
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            if (isInChat) {
+                socket.emit('rejoin');
+            }
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            updateUIState(false);
+            addMessage('You have been disconnected. Attempting to reconnect...', false, true);
+        });
+
+        socket.on('reconnect', () => {
+            console.log('Reconnected to server');
+            if (isInChat) {
+                socket.emit('rejoin');
+            }
+        });
+
         socket.on('waiting', (message) => {
             clearMessages();
             addMessage(message, false, true);
@@ -167,6 +190,13 @@
         socket.on('disconnected', (message) => {
             addMessage(message, false, true);
             updateUIState(false);
+            isInChat = false;
+        });
+
+        socket.on('reconnected', (message) => {
+            addMessage(message, false, true);
+            updateUIState(true);
+            isInChat = true;
         });
 
         socket.on('user count', (count) => {

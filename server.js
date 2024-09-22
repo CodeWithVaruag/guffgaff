@@ -73,6 +73,19 @@ class ChatManager {
         this.totalUsers = this.waitingUsers.length + this.activeChats.size;
         io.emit('user count', this.totalUsers);
     }
+
+    // New method to handle reconnections
+    reconnectUser(socket) {
+        const chatInfo = this.activeChats.get(socket.id);
+        if (chatInfo) {
+            const { partner, chatId } = chatInfo;
+            socket.join(chatId);
+            socket.emit('matched', 'You have reconnected to your chat.');
+            partner.emit('system message', 'Your chat partner has reconnected.');
+        } else {
+            this.findPartnerForUser(socket);
+        }
+    }
 }
 
 const chatManager = new ChatManager();
@@ -82,6 +95,11 @@ io.on('connection', (socket) => {
     chatManager.totalUsers++;
     chatManager.updateUserCount();
     chatManager.findPartnerForUser(socket);
+
+    // New event handler for rejoining
+    socket.on('rejoin', () => {
+        chatManager.reconnectUser(socket);
+    });
 
     socket.on('chat message', (msg) => {
         const chatInfo = chatManager.activeChats.get(socket.id);
@@ -101,11 +119,21 @@ io.on('connection', (socket) => {
         chatManager.findPartnerForUser(socket);
     });
 
-    socket.on('disconnect', () => {
-        chatManager.disconnectUser(socket);
-        chatManager.totalUsers--;
-        chatManager.updateUserCount();
-        console.log('User disconnected:', socket.id);
+    socket.on('disconnect', (reason) => {
+        console.log('User disconnected:', socket.id, 'Reason:', reason);
+        if (reason === 'io server disconnect') {
+            // The disconnection was initiated by the server, you need to reconnect manually
+            socket.connect();
+        }
+        // Don't remove the user from active chats immediately
+        setTimeout(() => {
+            const chatInfo = chatManager.activeChats.get(socket.id);
+            if (chatInfo) {
+                chatManager.disconnectUser(socket);
+                chatManager.totalUsers--;
+                chatManager.updateUserCount();
+            }
+        }, 5000); // Wait for 5 seconds before considering the user truly disconnected
     });
 });
 
